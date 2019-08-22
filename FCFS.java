@@ -48,29 +48,31 @@ public class FCFS extends Scheduler {
     }
 
     @Override
-    public void process(int time) {
+    public int process(int time) {
         Process head = queue.peek();
         if (head != null) {
             if (newProcess) {
-                switching--;
-                if (switching == 0) {
-                    switchProcess(time);
+                return switchProcess(time);
+            } else {
+                int processingTime = head.process(time, 0);
+                if (head.finished()) {
+                    processed.add(queue.poll());
+                    newProcess = true;
                 }
-            } else if (head.process(time)) {
-                processed.add(queue.poll());
-                newProcess = true;
+                return processingTime;
             }
         }
+        return 0;
     }
 
     @Override
-    protected void switchProcess(int time) {
+    protected int switchProcess(int time) {
         newProcess = false;
-        switching = switchProcessTime;
         startTimes += String.format(
             "T%d: %s\n",
             time + 1,
             queue.peek().getPid()
         );
+        return switchProcessTime;
     }
 }

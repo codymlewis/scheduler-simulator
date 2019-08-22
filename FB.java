@@ -1,6 +1,4 @@
 import java.util.ArrayList;
-import java.util.Queue;
-import java.util.PriorityQueue;
 import java.util.Comparator;
 import java.util.Collections;
 
@@ -86,7 +84,6 @@ public class FB extends Scheduler {
     @Override
     public void add(Process process) {
         queue.add(new FBProcess(process));
-        // Collections.sort(queue, new FBProcess());
     }
 
     private void add(FBProcess process) {
@@ -105,33 +102,32 @@ public class FB extends Scheduler {
     }
 
     @Override
-    public void process(int time) {
-        FBProcess head = queue.get(0);
-        if (head != null) {
+    public int process(int time) {
+        if (!queue.isEmpty()) {
+            FBProcess head = queue.get(0);
             if (newProcess) {
-                switching--;
-                if (switching == 0) {
-                    Collections.sort(queue, new FBProcess());
-                    switchProcess(time);
-                }
-            } else if (head.getProcess().process(time)) {
-                processed.add(queue.remove(0).getProcess());
-                newProcess = true;
+                Collections.sort(queue, new FBProcess());
+                return switchProcess(time);
             } else {
-                slice = (slice + 1) % SLICE_SIZE;
-                if (slice == 0 && queue.size() > 1) {
+                int processingTime = head.getProcess()
+                    .process(time, SLICE_SIZE);
+                if (head.getProcess().finished()) {
+                    processed.add(queue.remove(0).getProcess());
+                    newProcess = true;
+                } else {
                     head.incrementPriority();
                     add(queue.remove(0));
                     newProcess = true;
                 }
+                return processingTime;
             }
         }
+        return 0;
     }
 
     @Override
-    protected void switchProcess(int time) {
+    protected int switchProcess(int time) {
         newProcess = false;
-        switching = switchProcessTime;
         slice = 0;
         String curPid = queue.get(0).getProcess().getPid();
         if (!prevPid.equals(curPid)) {
@@ -142,5 +138,6 @@ public class FB extends Scheduler {
             );
         }
         prevPid = curPid;
+        return switchProcessTime;
     }
 }

@@ -15,21 +15,18 @@ public abstract class Scheduler {
     protected ArrayList<Process> processed;
     protected Integer switchProcessTime;
     protected boolean newProcess;
-    protected Integer switching;
     protected String startTimes;
 
     protected Scheduler() {
         processed = new ArrayList<>();
         switchProcessTime = 0;
         newProcess = true;
-        switching = switchProcessTime;
         startTimes = "";
     }
 
     protected Scheduler(int switchProcessTime) {
         this();
         this.switchProcessTime = switchProcessTime;
-        switching = switchProcessTime;
     }
 
     /**
@@ -46,7 +43,7 @@ public abstract class Scheduler {
      */
     public abstract boolean empty();
 
-    public abstract void process(int time);
+    public abstract int process(int time);
 
     /**
      * Give the results of the simulation, such as the times the process was
@@ -61,7 +58,7 @@ public abstract class Scheduler {
         stats += "\nProcess Turnaround Time Waiting Time\n";
         for (Process process : processed) {
             stats += String.format(
-                "%s      %d              %d\n",
+                "%s\t%d\t\t%d\n",
                 process.getPid(),
                 process.getTurnaroundTime(),
                 process.getWaitingTime()
@@ -87,8 +84,8 @@ public abstract class Scheduler {
         avgTurnaround /= processed.size();
         avgWaiting /= processed.size();
 
-        return String.format("%.2f                     %.2f", avgTurnaround, avgWaiting);
+        return String.format("%.2f\t\t\t%.2f", avgTurnaround, avgWaiting);
     }
 
-    protected abstract void switchProcess(int time);
+    protected abstract int switchProcess(int time);
 }

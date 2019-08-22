@@ -1,5 +1,6 @@
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Collections;
 
 /**
  * <h1>RR - Comp2240A1</h1>
@@ -12,19 +13,33 @@ import java.util.Queue;
  */
 
 public class NRR extends Scheduler {
-    private class NarrowProcess {
+    String prevPid;
+
+    private class NarrowProcess implements Comparable<NarrowProcess>,
+            Comparator<NarrowProcess> {
         private Process process;
         private int sliceSize;
         private boolean used;
+        private Integer time;
 
-        public NarrowProcess(Process process) {
+        public NarrowProcess(Process process, int time) {
             this.process = process;
             sliceSize = 4;
             used = false;
+            this.time = time;
         }
 
         public int getSliceSize() {
             return sliceSize;
+        }
+
+
+        public Integer getTime() {
+            return time;
+        }
+
+        public void setTime(int time) {
+            this.time = time;
         }
 
         public void decrementSliceSize() {
@@ -38,9 +53,19 @@ public class NRR extends Scheduler {
         public Process getProcess() {
             return process;
         }
+
+        @Override
+        public int compareTo(NarrowProcess other) {
+            return time.compareTo(other.getTime());
+        }
+
+        @Override
+        public int compare(NarrowProcess a, NarrowProcess b) {
+            return a.compareTo(b);
+        }
     }
 
-    private Queue<NarrowProcess> queue;
+    private ArrayList<NarrowProcess> queue;
     private int slice;
 
     /**
@@ -48,14 +73,16 @@ public class NRR extends Scheduler {
      */
     public NRR() {
         super();
-        queue = new LinkedList<>();
+        queue = new ArrayList<>();
         slice = 0;
+        prevPid = "";
     }
 
     public NRR(int switchProcessTime) {
         super(switchProcessTime);
-        queue = new LinkedList<>();
+        queue = new ArrayList<>();
         slice = 0;
+        prevPid = "";
     }
 
     /**
@@ -65,7 +92,8 @@ public class NRR extends Scheduler {
      */
     @Override
     public void add(Process process) {
-        queue.add(new NarrowProcess(process));
+        queue.add(new NarrowProcess(process, process.getArrivalTime()));
+        Collections.sort(queue);
     }
 
     /**
@@ -75,41 +103,43 @@ public class NRR extends Scheduler {
      */
     @Override
     public boolean empty() {
-        return queue.peek() == null;
+        return queue.isEmpty();
     }
 
     @Override
-    public void process(int time) {
-        NarrowProcess head = queue.peek();
-        if (head != null) {
-            if (newProcess) {
-                switching--;
-                if (switching == 0) {
-                    switchProcess(time);
-                }
-            } else if (head.getProcess().process(time)) {
-                processed.add(queue.poll().getProcess());
-                newProcess = true;
+    public int process(int time) {
+        if (!queue.isEmpty()) {
+            NarrowProcess head = queue.get(0);
+            if (newProcess && !prevPid.equals(head.getProcess().getPid())) {
+                return switchProcess(time);
             } else {
-                slice = (slice + 1) % queue.peek().getSliceSize();
-                if (slice == 0 && queue.size() > 1) {
-                    queue.add(queue.poll());
+                int processingTime = head.getProcess().process(time, head.getSliceSize());
+                prevPid = head.getProcess().getPid();
+                if (head.getProcess().finished()) {
+                    processed.add(queue.remove(0).getProcess());
+                    newProcess = true;
+                } else {
+                    queue.remove(0);
+                    head.setTime(time + processingTime);
+                    queue.add(head);
                     newProcess = true;
                 }
+                return processingTime;
             }
         }
+        return 0;
     }
 
     @Override
-    protected void switchProcess(int time) {
+    protected int switchProcess(int time) {
         newProcess = false;
-        switching = switchProcessTime;
         slice = 0;
-        queue.peek().decrementSliceSize();
+        queue.get(0).decrementSliceSize();
         startTimes += String.format(
             "T%d: %s\n",
             time + 1,
-            queue.peek().getProcess().getPid()
+            queue.get(0).getProcess().getPid()
         );
+        return switchProcessTime;
     }
 }

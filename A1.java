@@ -36,11 +36,11 @@ public class A1 {
         System.out.println(nrr.run());
 
         System.out.println("Summary");
-        System.out.println("Algorithm       Average Turnaround Time   Average Waiting Time");
-        System.out.format("FCFS            %s\n", fcfs.summary());
-        System.out.format("RR              %s\n", rr.summary());
-        System.out.format("FB (constant)   %s\n", fb.summary());
-        System.out.format("NRR             %s\n", nrr.summary());
+        System.out.println("Algorithm\tAverage Turnaround Time\tAverage Waiting Time");
+        System.out.format("FCFS\t\t%s\n", fcfs.summary());
+        System.out.format("RR\t\t%s\n", rr.summary());
+        System.out.format("FB (constant)\t%s\n", fb.summary());
+        System.out.format("NRR\t\t%s\n", nrr.summary());
 
         System.exit(0);
     }

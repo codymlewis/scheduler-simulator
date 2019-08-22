@@ -1,8 +1,8 @@
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.PriorityQueue;
 import java.io.File;
 
 /**
@@ -127,16 +127,27 @@ public class Dispatcher {
     public String run() {
         int time = 0;
         int timeProcessingTo = 0;
+        PriorityQueue<Integer> eventTimes = new PriorityQueue<>();
 
-        while (processes.size() != 0 || !scheduler.empty()) {
+        for (int eventTime: processes.keySet()) {
+            eventTimes.add(eventTime);
+        }
+
+        while (!eventTimes.isEmpty()) {
+            time = eventTimes.poll();
             if (processes.get(time) != null) {
                 for (Process process : processes.get(time)) {
                     scheduler.add(process);
                 }
                 processes.remove(time);
             }
-            scheduler.process(time);
-            time++;
+            if (time >= timeProcessingTo) {
+                int processingTime = scheduler.process(time);
+                if (processingTime != 0) {
+                    eventTimes.add(time + processingTime);
+                    timeProcessingTo = time + processingTime;
+                }
+            }
         }
 
         return scheduler.results();

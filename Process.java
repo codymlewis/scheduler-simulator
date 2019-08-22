@@ -93,16 +93,20 @@ public class Process {
         this.serviceTime = serviceTime;
     }
 
-    public boolean process(int time) {
+    public int process(int time, int slice) {
         if (lastProcessedTime == arrivalTime) {
             startTime = time;
         }
         waitingTime += (time - lastProcessedTime);
-        turnaroundTime += (time - lastProcessedTime + 1);
-        serviceTime--;
-        lastProcessedTime = time + 1;
-        // System.out.format("%s, wt: %d, tt: %d, st: %d, lpt: %d\n", pid, waitingTime, turnaroundTime, serviceTime, lastProcessedTime);
-        return serviceTime == 0;
+        if (slice == 0) {
+            slice = serviceTime;
+        } else {
+            slice = Integer.min(slice, serviceTime);
+        }
+        turnaroundTime += (time - lastProcessedTime + slice);
+        serviceTime -= slice;
+        lastProcessedTime = time + slice;
+        return slice;
     }
 
     /**
@@ -130,6 +134,10 @@ public class Process {
      */
     public int getStartTime() {
         return startTime;
+    }
+
+    public boolean finished() {
+        return serviceTime == 0;
     }
 
     public String toString() {
