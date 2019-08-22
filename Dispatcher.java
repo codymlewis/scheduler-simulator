@@ -22,19 +22,12 @@ public class Dispatcher {
     private Map<Integer, LinkedList<Process>> processes;
 
     /**
-     * Default constructor
-     */
-    public Dispatcher() {
-    }
-
-    /**
      * Input constructor
      *
      * @param schedulerAlgorithm Name of the scheduler algorithm to use
      * @param filename Name of the data file
      */
     public Dispatcher(String schedulerAlgorithm, String filename) {
-        this();
         processes = parseDataFile(filename);
         scheduler = schedulerFactory(schedulerAlgorithm);
     }

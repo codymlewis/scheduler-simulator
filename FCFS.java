@@ -22,6 +22,11 @@ public class FCFS extends Scheduler {
         queue = new LinkedList<>();
     }
 
+    /**
+     * Input constructor
+     *
+     * @param switchProcessTime time it take to switch processes
+     */
     public FCFS(int switchProcessTime) {
         super(switchProcessTime);
         queue = new LinkedList<>();
@@ -47,6 +52,12 @@ public class FCFS extends Scheduler {
         return queue.peek() == null;
     }
 
+    /**
+     * Process the Process at the head of the queue
+     *
+     * @param time current time
+     * @return time the processing operation took
+     */
     @Override
     public int process(int time) {
         Process head = queue.peek();
@@ -65,6 +76,12 @@ public class FCFS extends Scheduler {
         return 0;
     }
 
+    /**
+     * Switch to a new process
+     *
+     * @param time current time
+     * @return time that the switching operation took
+     */
     @Override
     protected int switchProcess(int time) {
         newProcess = false;

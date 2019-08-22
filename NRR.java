@@ -3,9 +3,9 @@ import java.util.Comparator;
 import java.util.Collections;
 
 /**
- * <h1>RR - Comp2240A1</h1>
+ * <h1>NRR - Comp2240A1</h1>
  *
- * The round robin scheduler
+ * The narrow round robin scheduler
  *
  * @author Cody Lewis
  * @version 1
@@ -15,6 +15,9 @@ import java.util.Collections;
 public class NRR extends Scheduler {
     String prevPid;
 
+    /**
+     * Wrapper class that is inclusive of the scheduling of this
+     */
     private class NarrowProcess implements Comparable<NarrowProcess>,
             Comparator<NarrowProcess> {
         private Process process;
@@ -22,6 +25,12 @@ public class NRR extends Scheduler {
         private boolean used;
         private Integer time;
 
+        /**
+         * Input constructor
+         *
+         * @param process Process that this will be composed of
+         * @param time time that this has been placed in the queue
+         */
         public NarrowProcess(Process process, int time) {
             this.process = process;
             sliceSize = 4;
@@ -29,19 +38,36 @@ public class NRR extends Scheduler {
             this.time = time;
         }
 
+        /**
+         * Get the current size of a time slice for this
+         *
+         * @return current slice size
+         */
         public int getSliceSize() {
             return sliceSize;
         }
 
-
+        /**
+         * Get the time that this was placed in the queue
+         *
+         * @return time a queue placement
+         */
         public Integer getTime() {
             return time;
         }
 
+        /**
+         * Update the time of queue placement
+         *
+         * @param time new time of placement
+         */
         public void setTime(int time) {
             this.time = time;
         }
 
+        /**
+         * Make the slice size a unit smaller
+         */
         public void decrementSliceSize() {
             if (used) {
                 sliceSize--;
@@ -50,15 +76,33 @@ public class NRR extends Scheduler {
             }
         }
 
+        /**
+         * Get the process contained in this
+         *
+         * @return process that this is composed of
+         */
         public Process getProcess() {
             return process;
         }
 
+        /**
+         * Compare the time of queue placement of this to other
+         *
+         * @param other Another NarrowProcess
+         * @return this.time.compareTo(other.time)
+         */
         @Override
         public int compareTo(NarrowProcess other) {
             return time.compareTo(other.getTime());
         }
 
+        /**
+         * Compare two NarrowProcesses
+         *
+         * @param a A NarrowProcess
+         * @param b another NarrowProcess
+         * @return a.compareTo(b)
+         */
         @Override
         public int compare(NarrowProcess a, NarrowProcess b) {
             return a.compareTo(b);
@@ -78,6 +122,11 @@ public class NRR extends Scheduler {
         prevPid = "";
     }
 
+    /**
+     * Input constructor
+     *
+     * @param switchProcessTime Time it takes to switch process
+     */
     public NRR(int switchProcessTime) {
         super(switchProcessTime);
         queue = new ArrayList<>();
@@ -106,6 +155,12 @@ public class NRR extends Scheduler {
         return queue.isEmpty();
     }
 
+    /**
+     * Process the Process at the head of the queue
+     *
+     * @param time current time
+     * @return time the processing operation took
+     */
     @Override
     public int process(int time) {
         if (!queue.isEmpty()) {
@@ -130,6 +185,12 @@ public class NRR extends Scheduler {
         return 0;
     }
 
+    /**
+     * Switch to a new process
+     *
+     * @param time current time
+     * @return time that the switching operation took
+     */
     @Override
     protected int switchProcess(int time) {
         newProcess = false;

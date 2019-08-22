@@ -47,6 +47,7 @@ public class Process {
 
     /**
      * Get the process id
+     *
      * @return process id
      */
     public String getPid() {
@@ -55,6 +56,7 @@ public class Process {
 
     /**
      * Get the time that the process arrived at the processor
+     *
      * @return time that the process arrived at the processor
      */
     public Integer getArrivalTime() {
@@ -63,6 +65,7 @@ public class Process {
 
     /**
      * Get the time that the process takes to execute
+     *
      * @return time that the process takes to execute
      */
     public Integer getServiceTime() {
@@ -71,6 +74,7 @@ public class Process {
 
     /**
      * Set the process id
+     *
      * @param pid process id
      */
     public void setPid(String pid) {
@@ -79,6 +83,7 @@ public class Process {
 
     /**
      * Set the time that the process arrived at the processor
+     *
      * @param arrivalTime time that the process arrived at the processor
      */
     public void setArrivalTime(Integer arrivalTime) {
@@ -87,26 +92,35 @@ public class Process {
 
     /**
      * Set the time that the process takes to execute
+     *
      * @param serviceTime time that the process takes to execute
      */
     public void setServiceTime(Integer serviceTime) {
         this.serviceTime = serviceTime;
     }
 
+    /**
+     * Process for the slice of time
+     *
+     * @param time current time
+     * @param slice Time slice allocate to this, 0 means no slicing
+     * @return amount of time taken
+     */
     public int process(int time, int slice) {
         if (lastProcessedTime == arrivalTime) {
             startTime = time;
         }
         waitingTime += (time - lastProcessedTime);
+        int timeTaken = 0;
         if (slice == 0) {
-            slice = serviceTime;
+            timeTaken = serviceTime;
         } else {
-            slice = Integer.min(slice, serviceTime);
+            timeTaken = Integer.min(slice, serviceTime);
         }
-        turnaroundTime += (time - lastProcessedTime + slice);
-        serviceTime -= slice;
-        lastProcessedTime = time + slice;
-        return slice;
+        turnaroundTime += (time - lastProcessedTime + timeTaken);
+        serviceTime -= timeTaken;
+        lastProcessedTime = time + timeTaken;
+        return timeTaken;
     }
 
     /**
@@ -136,13 +150,13 @@ public class Process {
         return startTime;
     }
 
+    /**
+     * Query whether this has finished processing
+     *
+     * @return true if finished else false
+     */
     public boolean finished() {
         return serviceTime == 0;
     }
-
-    public String toString() {
-        return pid;
-    }
-
 }
 

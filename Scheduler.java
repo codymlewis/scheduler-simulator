@@ -17,6 +17,9 @@ public abstract class Scheduler {
     protected boolean newProcess;
     protected String startTimes;
 
+    /**
+     * Default constructor
+     */
     protected Scheduler() {
         processed = new ArrayList<>();
         switchProcessTime = 0;
@@ -24,6 +27,11 @@ public abstract class Scheduler {
         startTimes = "";
     }
 
+    /**
+     * Input constructor
+     *
+     * @param switchProcessTime Time to take to switch processes
+     */
     protected Scheduler(int switchProcessTime) {
         this();
         this.switchProcessTime = switchProcessTime;
@@ -43,7 +51,21 @@ public abstract class Scheduler {
      */
     public abstract boolean empty();
 
+    /**
+     * Process the Process at the head of the queue
+     *
+     * @param time current time
+     * @return time the processing operation took
+     */
     public abstract int process(int time);
+
+    /**
+     * Switch to a new process
+     *
+     * @param time current time
+     * @return time that the switching operation took
+     */
+    protected abstract int switchProcess(int time);
 
     /**
      * Give the results of the simulation, such as the times the process was
@@ -86,6 +108,4 @@ public abstract class Scheduler {
 
         return String.format("%.2f\t\t\t%.2f", avgTurnaround, avgWaiting);
     }
-
-    protected abstract int switchProcess(int time);
 }

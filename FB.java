@@ -5,7 +5,7 @@ import java.util.Collections;
 /**
  * <h1>FB - Comp2240A1</h1>
  *
- * The round robin scheduler
+ * The Feedback scheduler
  *
  * @author Cody Lewis
  * @version 1
@@ -16,43 +16,79 @@ public class FB extends Scheduler {
     private static final int SLICE_SIZE = 4;
     private String prevPid;
 
-    private class FBProcess implements Comparable<FBProcess>, Comparator<FBProcess> {
+    /**
+     * Process wrapper class that includes priorities for feedback
+     */
+    private class FBProcess implements Comparable<FBProcess>,
+            Comparator<FBProcess> {
         private Process process;
         private Integer priority;
 
+        /**
+         * Default constuctor
+         */
         public FBProcess() {
             priority = 0;
         }
 
+        /**
+         * Input constuctor
+         *
+         * @param process Process to compose this of
+         */
         public FBProcess(Process process) {
+            this();
             this.process = process;
-            priority = 0;
         }
 
+        /**
+         * Lower the priority of this
+         */
         public void incrementPriority() {
             if (priority < 5) {
                 priority++;
             }
         }
 
+        /**
+         * Get the process that this is composed of
+         *
+         * @return process contained in this
+         */
         public Process getProcess() {
             return process;
         }
 
+        /**
+         * Get the priority of this
+         *
+         * @return Integer showing the priority of this
+         */
         public Integer getPriority() {
             return priority;
         }
 
+        /**
+         * Compare the priority value of the to the other
+         *
+         * @param other other FBProcess to compare this to
+         * @return this.compareTo(other) where the compared values are Integer
+         */
+        @Override
         public int compareTo(FBProcess other) {
             return priority.compareTo(other.getPriority());
         }
 
+        /**
+         * Compare two FBProcesses
+         *
+         * @param a a FBProcess
+         * @param b another FBProcess
+         * @return a.compareTo(b)
+         */
+        @Override
         public int compare(FBProcess a, FBProcess b) {
             return a.compareTo(b);
-        }
-
-        public String toString() {
-            return String.format("%s: %d", process.toString(), priority);
         }
     }
 
@@ -69,6 +105,11 @@ public class FB extends Scheduler {
         prevPid = "";
     }
 
+    /**
+     * Input constructor
+     *
+     * @param switchProcessTime time it takes to switch processes
+     */
     public FB(int switchProcessTime) {
         super(switchProcessTime);
         queue = new ArrayList<>();
@@ -86,6 +127,11 @@ public class FB extends Scheduler {
         queue.add(new FBProcess(process));
     }
 
+    /**
+     * Add a wrapped process to the queue and sort by priority
+     *
+     * @param process a wrapped process
+     */
     private void add(FBProcess process) {
         queue.add(process);
         Collections.sort(queue, new FBProcess());
@@ -101,6 +147,12 @@ public class FB extends Scheduler {
         return queue.isEmpty();
     }
 
+    /**
+     * Process the Process at the head of the queue
+     *
+     * @param time current time
+     * @return time the processing operation took
+     */
     @Override
     public int process(int time) {
         if (!queue.isEmpty()) {
@@ -125,6 +177,12 @@ public class FB extends Scheduler {
         return 0;
     }
 
+    /**
+     * Switch to a new process
+     *
+     * @param time current time
+     * @return time that the switching operation took
+     */
     @Override
     protected int switchProcess(int time) {
         newProcess = false;
