@@ -7,7 +7,7 @@ import java.util.Collections;
  *
  * The round robin scheduler
  *
- * @author Cody Lewis
+ * @author Cody Lewis (c3283349)
  * @version 1
  * @since 2019-08-17
  */
@@ -148,7 +148,8 @@ public class RR extends Scheduler {
             if (newProcess && !prevPid.equals(head.getProcess().getPid())) {
                 return switchProcess(time);
             } else {
-                int processingTime = head.getProcess().process(time, SLICE_SIZE);
+                int processingTime = head.getProcess()
+                    .process(time, SLICE_SIZE);
                 prevPid = head.getProcess().getPid();
                 if (head.getProcess().finished()) {
                     processed.add(queue.remove(0).getProcess());

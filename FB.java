@@ -7,7 +7,7 @@ import java.util.Collections;
  *
  * The Feedback scheduler
  *
- * @author Cody Lewis
+ * @author Cody Lewis (c3283349)
  * @version 1
  * @since 2019-08-17
  */

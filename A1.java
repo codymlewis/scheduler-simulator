@@ -19,28 +19,20 @@ public class A1 {
             System.exit(1);
         }
 
-        System.out.println("FCFS:");
-        Dispatcher fcfs = new Dispatcher("FCFS", args[0]);
-        System.out.println(fcfs.run());
+        String[] dispatcherNames = {"FCFS", "RR", "FB", "NRR"};
+        Dispatcher[] dispatchers = new Dispatcher[dispatcherNames.length];
 
-        System.out.println("RR:");
-        Dispatcher rr = new Dispatcher("RR", args[0]);
-        System.out.println(rr.run());
-
-        System.out.println("FB (constant):");
-        Dispatcher fb = new Dispatcher("FB", args[0]);
-        System.out.println(fb.run());
-
-        System.out.println("NRR:");
-        Dispatcher nrr = new Dispatcher("NRR", args[0]);
-        System.out.println(nrr.run());
+        for (int i = 0; i < dispatcherNames.length; ++i) {
+            System.out.println(String.format("%s:", dispatcherNames[i]));
+            dispatchers[i] = new Dispatcher(dispatcherNames[i], args[0]);
+            System.out.println(dispatchers[i].run());
+        }
 
         System.out.println("Summary");
         System.out.println("Algorithm\tAverage Turnaround Time\tAverage Waiting Time");
-        System.out.format("FCFS\t\t%s\n", fcfs.summary());
-        System.out.format("RR\t\t%s\n", rr.summary());
-        System.out.format("FB (constant)\t%s\n", fb.summary());
-        System.out.format("NRR\t\t%s\n", nrr.summary());
+        for (int i = 0; i < dispatcherNames.length; ++i) {
+            System.out.format("%s\t\t%s\n", dispatcherNames[i], dispatchers[i].summary());
+        }
 
         System.exit(0);
     }

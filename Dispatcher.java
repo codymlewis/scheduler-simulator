@@ -11,7 +11,7 @@ import java.io.File;
  * A class for the Dispatcher, it manages the process execution simulation and
  * is composed of a scheduler.
  *
- * @author Cody Lewis
+ * @author Cody Lewis (c3283349)
  * @version 1
  * @since 2019-08-17
  */

@@ -6,7 +6,7 @@ import java.util.Queue;
  *
  * The first come fist served scheduler
  *
- * @author Cody Lewis
+ * @author Cody Lewis (c3283349)
  * @version 1
  * @since 2019-08-17
  */

@@ -7,7 +7,7 @@ import java.util.Collections;
  *
  * The narrow round robin scheduler
  *
- * @author Cody Lewis
+ * @author Cody Lewis (c3283349)
  * @version 1
  * @since 2019-08-17
  */

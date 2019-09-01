@@ -3,7 +3,7 @@
  *
  * Exception to be called when the data file is formatted incorrectly
  *
- * @author Cody Lewis
+ * @author Cody Lewis (c3283349)
  * @version 1
  * @since 2019-08-17
  */

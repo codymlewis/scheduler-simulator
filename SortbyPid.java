@@ -4,7 +4,7 @@ import java.util.Comparator;
  * <h1>SortbyPid - Comp2240A1</h1>
  * Sort the processes by their id
  *
- * @author Cody Lewis
+ * @author Cody Lewis (c3283349)
  * @version 1
  * @since 2019-08-17
  */
