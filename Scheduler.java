@@ -1,5 +1,6 @@
 import java.util.Collections;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 /**
  * <h1>Scheduler - Comp2240A1</h1>
@@ -74,20 +75,16 @@ public abstract class Scheduler {
      * @return Results of the simulation
      */
     public String results() {
-        String stats = "";
-        Collections.sort(processed, new SortbyPid());
-        stats += startTimes;
-        stats += "\nProcess Turnaround Time Waiting Time\n";
-        for (Process process : processed) {
-            stats += String.format(
-                "%s\t%d\t\t%d\n",
-                process.getPid(),
-                process.getTurnaroundTime(),
-                process.getWaitingTime()
-            );
-        }
-
-        return stats;
+        return startTimes + "\n" +
+            "Process Turnaround Time Waiting Time\n" +
+            processed.stream()
+                .sorted(new SortbyPid())
+                .map(p -> String.format(
+                            "%s\t%d\t\t%d",
+                            p.getPid(),
+                            p.getTurnaroundTime(),
+                            p.getWaitingTime()))
+                .collect(Collectors.joining("\n")) + "\n";
     }
 
     /**
@@ -96,16 +93,16 @@ public abstract class Scheduler {
      * @return The average turnaroundTime and average waitingTime
      */
     public String summary() {
-        double avgTurnaround = 0;
-        double avgWaiting = 0;
-
-        for (Process process : processed) {
-            avgTurnaround += process.getTurnaroundTime();
-            avgWaiting += process.getWaitingTime();
-        }
-        avgTurnaround /= processed.size();
-        avgWaiting /= processed.size();
-
-        return String.format("%.2f\t\t\t%.2f", avgTurnaround, avgWaiting);
+        return String.format(
+                "%.2f\t\t\t%.2f",
+                processed.stream()
+                    .mapToDouble(p -> p.getTurnaroundTime())
+                    .average()
+                    .orElse(0),
+                processed.stream()
+                    .mapToDouble(p -> p.getWaitingTime())
+                    .average()
+                    .orElse(0)
+        );
     }
 }

@@ -159,4 +159,3 @@ public class Process {
         return serviceTime == 0;
     }
 }
-

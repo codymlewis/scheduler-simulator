@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Scanner;
 import java.util.PriorityQueue;
 import java.io.File;
+import java.io.FileNotFoundException;
 
 /**
  * <h1>Dispatcher - Comp2240A1</h1>
@@ -40,10 +41,11 @@ public class Dispatcher {
      * @return Map between time of process and the list of processes
      */
     private Map<Integer, LinkedList<Process>> parseDataFile(String filename) {
-        Map<Integer, LinkedList<Process>> data = new HashMap<>();
+        Map<Integer, LinkedList<Process>> data = null;
 
         try (Scanner fstream = new Scanner(new File(filename))) {
             String curLine = fstream.nextLine();
+            // Check that the file is formated correctly
             if (!curLine.contains("BEGIN")) {
                 throw new InvalidDataException();
             }
@@ -57,37 +59,62 @@ public class Dispatcher {
             if (!fstream.nextLine().contains("END")) {
                 throw new InvalidDataException();
             }
-            String pid = "";
-            int arrivalTime = 0;
-            int serviceTime = 0;
-            while (!(curLine = fstream.nextLine()).contains("EOF")) {
-                if (curLine.length() > 1) {
-                    sstream = new Scanner(curLine);
-                    switch (sstream.next()) {
-                        case "ID:":
-                            pid = sstream.next();
-                            break;
-                        case "Arrive:":
-                            arrivalTime = sstream.nextInt();
-                            break;
-                        case "ExecSize:":
-                            serviceTime = sstream.nextInt();
-                            break;
-                        case "END":
-                            if (data.get(arrivalTime) == null) {
-                                data.put(
-                                    arrivalTime,
-                                    new LinkedList<Process>()
-                                );
-                            }
-                            data.get(arrivalTime).add(
-                                new Process(pid, arrivalTime, serviceTime)
+            data = fstreamToMap(fstream);
+        } catch (FileNotFoundException fnfe) {
+            System.err.format(
+                "Error: File %s was not found. Continuing run with no processes.",
+                filename
+            );
+        } catch (InvalidDataException ide) {
+            System.err.format(
+                "Error: %s Continuing run with no processes.",
+                ide.getMessage()
+            );
+        }
+
+        return data == null ?
+            new HashMap<Integer, LinkedList<Process>>() :
+            data;
+    }
+
+    /**
+     * Put the file contents from the stream into Map
+     *
+     * @param fstream A scanner stream iterated to the process content
+     * @return Map from the time of arrival to the list of processes
+     */
+    private Map<Integer, LinkedList<Process>> fstreamToMap(Scanner fstream) {
+        String pid = "", curLine = "";
+        Scanner sstream;
+        int arrivalTime = 0;
+        int serviceTime = 0;
+        Map<Integer, LinkedList<Process>> data = new HashMap<>();
+
+        while (!(curLine = fstream.nextLine()).contains("EOF")) {
+            if (curLine.length() > 1) {
+                sstream = new Scanner(curLine);
+                switch (sstream.next()) {
+                    case "ID:":
+                        pid = sstream.next();
+                        break;
+                    case "Arrive:":
+                        arrivalTime = sstream.nextInt();
+                        break;
+                    case "ExecSize:":
+                        serviceTime = sstream.nextInt();
+                        break;
+                    case "END":
+                        if (data.get(arrivalTime) == null) {
+                            data.put(
+                                arrivalTime,
+                                new LinkedList<Process>()
                             );
-                    }
+                        }
+                        data.get(arrivalTime).add(
+                            new Process(pid, arrivalTime, serviceTime)
+                        );
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
 
         return data;
@@ -121,17 +148,12 @@ public class Dispatcher {
         int time = 0;
         int timeProcessingTo = 0;
         PriorityQueue<Integer> eventTimes = new PriorityQueue<>();
-
-        for (int eventTime: processes.keySet()) {
-            eventTimes.add(eventTime);
-        }
+        processes.keySet().stream().forEach(e -> eventTimes.add(e));
 
         while (!eventTimes.isEmpty()) {
             time = eventTimes.poll();
             if (processes.get(time) != null) {
-                for (Process process : processes.get(time)) {
-                    scheduler.add(process);
-                }
+                processes.get(time).stream().forEach(p -> scheduler.add(p));
                 processes.remove(time);
             }
             if (time >= timeProcessingTo) {

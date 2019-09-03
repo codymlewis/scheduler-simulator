@@ -168,7 +168,8 @@ public class NRR extends Scheduler {
             if (newProcess && !prevPid.equals(head.getProcess().getPid())) {
                 return switchProcess(time);
             } else {
-                int processingTime = head.getProcess().process(time, head.getSliceSize());
+                int processingTime = head.getProcess()
+                    .process(time, head.getSliceSize());
                 prevPid = head.getProcess().getPid();
                 if (head.getProcess().finished()) {
                     processed.add(queue.remove(0).getProcess());
