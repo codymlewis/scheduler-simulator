@@ -132,7 +132,7 @@ public class Dispatcher {
                 return new RR(switchProcessTime);
             case "NRR":
                 return new NRR(switchProcessTime);
-            case "FB":
+            case "FB (constant)":
                 return new FB(switchProcessTime);
             default:
                 return new FCFS(switchProcessTime);

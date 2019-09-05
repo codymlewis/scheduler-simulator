@@ -19,7 +19,7 @@ public class A1 {
             System.exit(1);
         }
 
-        String[] dispatcherNames = {"FCFS", "RR", "FB", "NRR"};
+        String[] dispatcherNames = {"FCFS", "RR", "FB (constant)", "NRR"};
         Dispatcher[] dispatchers = new Dispatcher[dispatcherNames.length];
 
         for (int i = 0; i < dispatcherNames.length; ++i) {
@@ -31,7 +31,13 @@ public class A1 {
         System.out.println("Summary");
         System.out.println("Algorithm\tAverage Turnaround Time\tAverage Waiting Time");
         for (int i = 0; i < dispatcherNames.length; ++i) {
-            System.out.format("%s\t\t%s\n", dispatcherNames[i], dispatchers[i].summary());
+            String algName;
+            if (dispatcherNames[i].length() > 8) {
+                algName = String.format("%s\t", dispatcherNames[i]);
+            } else {
+                algName = String.format("%s\t\t", dispatcherNames[i]);
+            }
+            System.out.format("%s%s\n", algName, dispatchers[i].summary());
         }
 
         System.exit(0);
